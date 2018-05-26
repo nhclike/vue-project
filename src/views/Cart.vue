@@ -60,7 +60,7 @@
               </ul>
             </div>
             <ul class="cart-item-list">
-              <li  v-for="(item,index) in cartList">
+              <li  v-for="(item,index) in cartList" >
                 <div class="cart-tab-1">
                   <div class="cart-item-check">
                     <a href="javascipt:;" class="checkbox-btn item-check-btn" @click="updateCart('check',item)"  v-bind:class="{'check':item.checked==1}">
@@ -77,7 +77,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-2">
-                  <div class="item-price">{{item.salePrice}}</div>
+                  <div class="item-price">{{(item.salePrice)|currency('$')}}</div>
                 </div>
                 <div class="cart-tab-3">
                   <div class="item-quantity">
@@ -91,7 +91,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-4">
-                  <div class="item-price-total">{{item.productNum*item.salePrice}}</div>
+                  <div class="item-price-total">{{(item.productNum*item.salePrice)|currency('$')}}</div>
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
@@ -120,10 +120,10 @@
             </div>
             <div class="cart-foot-r">
               <div class="item-total">
-                Item total: <span class="total-price">{{totalPrice}}</span>
+                Item total: <span class="total-price">{{totalPrice|currency('$')}}</span>
               </div>
               <div class="btn-wrap">
-                <a class="btn btn--red">Checkout</a>
+                <a class="btn btn--red" v-bind:class="{'btn--dis':checkedCount==0}" @click="checkOut">Checkout</a>
               </div>
             </div>
           </div>
@@ -291,6 +291,13 @@
             console.log('操作成功');
           }
         })
+      },
+      checkOut(){
+        if(this.checkedCount>0){
+            this.$router.push({
+              path:'/address'
+            })
+        }
       }
     }
   }

@@ -193,11 +193,108 @@ router.post('/checkAll',function (req,res,next) {
                 result:''
               })
             }
-
           }
         })
       }
     }
   })
 });
+//获取用户地址
+router.get('/addressList',function (req,res,next) {
+  var userId=req.cookies.userId;
+  User.findOne({
+    'userId':userId
+  },function (err,user) {
+    if(err){
+      res.json({
+        status:'1',
+        msg:'操作失败',
+        result:''
+      })
+    }
+    else{
+      res.json({
+        status:'0',
+        msg:'',
+        result:user.addressList
+      })
+    }
+  })
+});
+
+//设置默认地址
+router.post('/setDefault',function (req,res,next) {
+  var userId=req.cookies.userId,
+      addressId=req.body.addressId;
+  User.findOne({
+    userId:userId
+  },function (err,doc) {
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:''
+      })
+    }
+    else{
+      var addressList=doc.addressList;
+      addressList.forEach((item)=>{
+        if(item.addressId==addressId){
+          item.isDefault=true;
+        }
+        else{
+          item.isDefault=false;
+        }
+      })
+      doc.save(function (err,doc1) {
+        if(err){
+          res.json({
+            status:'1',
+            msg:err.message,
+            result:''
+          })
+        }
+        else{
+          res.json({
+            status:'0',
+            msg:'',
+            result:''
+          })
+        }
+      })
+    }
+  })
+})
+
+//删除地址
+router.post('/delAddress',function (req,res,next) {
+  var userId=req.cookies.userId,
+      addressId=req.body.addressId;
+  User.update({
+    userId:userId
+  },{
+    $pull:{
+      'addressList':{
+        'addressId':addressId
+      }
+    }
+  },function (err,doc) {
+    if(err){
+      res.json({
+        status:'1',
+        msg:'操作失败',
+        result:''
+      })
+    }
+    else{
+      if(doc){
+        res.json({
+          status:'0',
+          msg:'删除成功',
+          result:''
+        })
+      }
+    }
+  })
+})
 module.exports = router;
