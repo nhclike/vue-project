@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var util=require('./../util/util')
 var User=require('./../models/users');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -294,6 +295,75 @@ router.post('/delAddress',function (req,res,next) {
           result:''
         })
       }
+    }
+  })
+})
+
+//
+router.post('/payMent',function (req,res,next) {
+  var userId=req.cookies.userId,orderTotal=req.body.orderTotal,addressId=req.body.addressId;
+  User.findOne({
+    userId:userId
+  },function (err,doc) {
+    if(err){
+      res.json({
+        status:'1',
+        msg:'操作失败',
+        result:''
+      })
+    }
+    else{
+      var address='',goodList=[]
+      //获取地址信息
+      doc.addressList.forEach((item)=>{
+        if(item.addressId==addressId){
+          address=item
+        }
+      });
+      //获取选中的商品信息
+      doc.cartList.forEach((item)=>{
+        if(item.checked=='1'){
+          goodList.push(item)
+        }
+      })
+      var r1=Math.floor(Math.random()*10);
+      var r2=Math.floor(Math.random()*10);
+      var sysData=new Date().Format('yyyyMMddhhmmss');
+      var createData=new Date().Format('yyyy-MM-dd hh:mm:ss');
+      var orderId='612'+r1+sysData+r2;
+      var order={
+        orderId:orderId,
+        orderTotal:orderTotal,
+        addressInfo:address,
+        goodList:goodList,
+        orderStatus:'1',
+        createData:createData
+      }
+      doc.orderList.push(order);
+      doc.save(function (err1,doc1) {
+        if(err1){
+          res.json({
+            status:'1',
+            msg:'操作失败',
+            result:''
+          })
+        }
+        else{
+          res.json({
+            status:'0',
+            msg:'',
+            result:{
+              orderId:order.orderId,
+              orderTotal:order.orderTotal
+            }
+          })
+        }
+      })
+      res.json({
+        status:'0',
+        msg:'',
+        result:''
+      })
     }
   })
 })
