@@ -205,7 +205,6 @@
             }
             else{
               this.mdShow=true;
-              //alert(res.msg)
             }
           })
         },

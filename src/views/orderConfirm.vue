@@ -183,8 +183,8 @@
                 let res=response.data;
                 if(res.status=='0'){
                     this.$router.push({
-                      path:'/orderSuccess'
-                    })
+                      path:'/orderSuccess?orderId='+res.result.orderId
+                    });
                     console.log('create order success')
                 }
             })

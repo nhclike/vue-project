@@ -56,7 +56,7 @@ router.post('/logout',function (req,res,next) {
     result:""
   })
 });
-
+//检查是否登录接口
 router.get('/checkLogin',function (req,res,next) {
   if(req.cookies.userId){
     res.json({
@@ -124,7 +124,6 @@ router.post('/delCart',function (req,res,next) {
           result:''
         })
       }
-
     }
   })
 });
@@ -299,7 +298,7 @@ router.post('/delAddress',function (req,res,next) {
   })
 })
 
-//
+//支付接口
 router.post('/payMent',function (req,res,next) {
   var userId=req.cookies.userId,orderTotal=req.body.orderTotal,addressId=req.body.addressId;
   User.findOne({
@@ -359,11 +358,57 @@ router.post('/payMent',function (req,res,next) {
           })
         }
       })
+    }
+  })
+});
+
+//根据订单id查询订单信息
+router.get('/orderDetail',function (req,res,next) {
+  var userId=req.cookies.userId,orderId=req.param('orderId');
+  User.findOne({userId:userId},function (err,userInfo) {
+    if(err){
       res.json({
-        status:'0',
-        msg:'',
+        status:'1',
+        msg:'操作失败',
         result:''
       })
+    }
+    else{
+      var orderList=userInfo.orderList;
+
+      if(orderList.length>0){
+        var orderTotal=0;
+        orderList.forEach((item)=>{
+          if(item.orderId==orderId){
+            orderTotal=item.orderTotal
+          }
+        });
+        if(orderTotal>0){
+          res.json({
+            status:'0',
+            msg:'',
+            result:{
+              orderId:orderId,
+              orderTotal:orderTotal
+            }
+          })
+        }
+        else{
+          res.json({
+            status:'12002',
+            msg:'无此订单',
+            result:''
+          })
+        }
+
+      }
+      else{
+        res.json({
+          status:'12001',
+          msg:'无此订单',
+          result:''
+        })
+      }
     }
   })
 })

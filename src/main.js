@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import App from './App';
+
+import Vuex from 'vuex';
 import router from './router'
 import VueLazyLoad from 'vue-lazyload';
 import infiniteScroll from  'vue-infinite-scroll';
@@ -7,7 +9,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'
 import {currency} from './util/currency';
 import axios from 'axios';
-
+Vue.use(Vuex);
 Vue.use(ElementUI);
 Vue.use(infiniteScroll);
 Vue.config.productionTip = false;
@@ -15,6 +17,24 @@ Vue.use(VueLazyLoad,{
   loading:'static/loading-svg/loading-bars.svg'
 });
 Vue.filter('currency',currency);
+
+const store=new Vuex.Store({
+  state:{
+    nickName:'admin',
+    cartCount:0
+  },
+  mutations:{
+    updateUserInfo(state,nickName){
+      state.nickName=nickName
+    },
+    updateCartCount(state,cartCount){
+      state.cartCount+=cartCount
+    }
+  }
+});
+
+
+//
 axios.defaults.retry = 4;
 axios.defaults.retryDelay = 1000;
 
@@ -53,6 +73,7 @@ axios.interceptors.response.use(undefined, function axiosRetryInterceptor(err) {
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 });

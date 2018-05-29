@@ -16,12 +16,12 @@
       <div class="navbar-right-container" style="display: flex;">
         <div class="navbar-menu-container">
           <!--<a href="/" class="navbar-link">我的账户</a>-->
-          <span v-text="nikename" v-if="islogin"></span>
+          <span v-text="nickName" v-if="islogin"></span>
           <a href="javascript:void(0)" class="navbar-link"  @click="dialogLoginFormVisible = true" v-if="!islogin"  >Login</a>
 
           <a href="javascript:void(0)" class="navbar-link" @click="logout" v-if="islogin">Logout</a>
           <div class="navbar-cart-container">
-            <span class="navbar-cart-count"></span>
+            <span class="navbar-cart-count">0</span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">
               <svg class="navbar-cart-logo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -34,10 +34,10 @@
     <el-dialog title="用户登录" :visible.sync="dialogLoginFormVisible" width="30%" center>
       <el-form :model="loginForm">
         <el-form-item label="用户名" :label-width="formLabelWidth">
-          <el-input v-model="loginForm.userName" auto-complete="off"></el-input>
+          <el-input v-model="loginForm.userName" auto-complete="off" @keyup.enter ="login"></el-input>
         </el-form-item>
         <el-form-item label="密码" :label-width="formLabelWidth">
-          <el-input v-model="loginForm.userPwd" auto-complete="off"></el-input>
+          <el-input v-model="loginForm.userPwd" auto-complete="off" @keyup.enter ="login"></el-input>
 
         </el-form-item>
       </el-form>
@@ -62,7 +62,7 @@
         },
         errorTip:false,
         formLabelWidth: '60px',
-        nikename:'',
+
         islogin:false
       }
     },
@@ -70,12 +70,17 @@
       this.checkLogin()
 
     },
+    computed:{
+      nickName(){
+        return this.$store.state.nickName
+      }
+    },
     methods:{
       checkLogin(){
         axios.get('users/checkLogin').then((response)=>{
           let res=response.data;
           if(res.status=='0'){ //当前已经登录
-            this.nikename=res.result;
+            this.$store.commit('updateUserInfo',res.result);
             this.islogin=true;
           }
         })
@@ -92,10 +97,11 @@
         }).then((response)=>{
           let res=response.data;
           if(res.status=='0'){ //成功
+            this.$store.commit('updateUserInfo',res.result.userName);
+
             this.errorTip=false;
             this.dialogLoginFormVisible=false;
             this.islogin=true;
-            this.nikename=res.result.userName;
           }
           else{//失败
             this.errorTip=true
