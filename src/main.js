@@ -28,7 +28,10 @@ const store=new Vuex.Store({
       state.nickName=nickName
     },
     updateCartCount(state,cartCount){
-      state.cartCount+=cartCount
+      state.cartCount+=Number(cartCount)
+    },
+    initCartCount(state,cartCount){
+      state.cartCount=cartCount
     }
   }
 });

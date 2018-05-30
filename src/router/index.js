@@ -4,7 +4,7 @@ import HelloWorld from '@/components/HelloWorld';
 import GoodList from '@/views/GoodsList';
 import Cart from '@/views/Cart';
 import Address from '@/views/Address';
-import orderConfirm from '@/views/orderConfirm'
+import orderConfirm from '@/views/OrderConfirm'
 import orderSuccess from '@/views/OrderSuccess'
 import test from '@/views/test'
 Vue.use(Router)

@@ -21,8 +21,8 @@
 
           <a href="javascript:void(0)" class="navbar-link" @click="logout" v-if="islogin">Logout</a>
           <div class="navbar-cart-container">
-            <span class="navbar-cart-count">0</span>
-            <a class="navbar-link navbar-cart-link" href="/#/cart">
+            <span class="navbar-cart-count" v-if="islogin">{{cartCount}}</span>
+            <a class="navbar-link navbar-cart-link" href="/cart">
               <svg class="navbar-cart-logo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
               </svg>
@@ -67,12 +67,16 @@
       }
     },
     mounted:function () {
-      this.checkLogin()
+      this.checkLogin();
+
 
     },
     computed:{
       nickName(){
         return this.$store.state.nickName
+      },
+      cartCount(){
+        return this.$store.state.cartCount
       }
     },
     methods:{
@@ -80,7 +84,7 @@
         axios.get('users/checkLogin').then((response)=>{
           let res=response.data;
           if(res.status=='0'){ //当前已经登录
-            this.$store.commit('updateUserInfo',res.result);
+            this.getCartCount();
             this.islogin=true;
           }
         })
@@ -102,6 +106,7 @@
             this.errorTip=false;
             this.dialogLoginFormVisible=false;
             this.islogin=true;
+            this.getCartCount()
           }
           else{//失败
             this.errorTip=true
@@ -113,9 +118,21 @@
           let res=response.data;
           if(res.status=='0'){
             this.islogin=false;
+            this.$store.commit('updateCartCount','')
           }
         })
+      },
+      getCartCount(){
+        axios.get('/users/getCartCount').then(
+          (response)=>{
+            let res=response.data;
+            if(res.status=='0'){
+              this.$store.commit('initCartCount',res.result)
+            }
+          }
+        )
       }
+
     }
   }
 </script>

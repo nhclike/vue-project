@@ -95,7 +95,7 @@
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
-                    <a href="javascript:;" class="item-edit-btn" @click="confirmDeleteProduct(item.productId)">
+                    <a href="javascript:;" class="item-edit-btn" @click="confirmDeleteProduct(item)">
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
@@ -179,6 +179,7 @@
         cartList:[],
         mdShowDel:false,
         productId:'',
+        delItem:[]
 
       }
     },
@@ -224,11 +225,11 @@
           let res=response.data;
           this.cartList=res.result;
           this.productNum=res.result.productNum;
-
         })
       },
-      confirmDeleteProduct(productId){
-        this.productId=productId;
+      confirmDeleteProduct(item){
+        this.productId=item.productId;
+        this.delItem=item;
         this.mdShowDel=true;
       },
       closeModal(){
@@ -242,6 +243,7 @@
           if(res.status=='0'){
             this.mdShowDel=false;
             this.init();
+            this.$store.commit('updateCartCount',-this.delItem.productNum)
           }
           else{
             alert('删除失败')
@@ -250,7 +252,8 @@
       },
       updateCart(flag,item){
         if(flag=='add'){
-          item.productNum++
+          item.productNum++;
+          this.$store.commit('updateCartCount',1)
         }
         else if(flag=='reduce'){
           if(item.productNum==0){
@@ -258,6 +261,7 @@
           }
           else{
             item.productNum--;
+            this.$store.commit('updateCartCount',-1)
           }
         }
         else{
