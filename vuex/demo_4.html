@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vuex-mutations</title>
+  <script src="./../node_modules/vue/dist/vue.js"></script>
+  <script src="./../node_modules/vuex/dist/vuex.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h2>{{msg}}</h2>
+    <counter></counter>
+    <h2 @click="add">change</h2>
+    <span>mutations 通过 this.$store.commit 提交</span>
+    <span>action 通过 context.commit 提交mutations； action 通过 dispatch 提交更新 state</span>
+    <span>action可以管理异步操作</span>
+    <span>getter类似于计算属性，可以使用state中的值重新定义一个状态，</span>
+
+  </div>
+  <script>
+    const counter={
+      template:`
+        <div>
+            <div>{{count}}</div>
+            <div>{{name}}</div>
+                        <div>{{userName}}</div>
+
+        </div>
+      `,
+      computed:{
+        count(){
+          return this.$store.state.count
+        },
+        name(){
+          return this.$store.state.name
+        },
+        userName(){
+          return this.$store.getters.userName
+        }
+      }
+    };
+    const store1 =new Vuex.Store({
+      state:{
+        count:10,
+        name:'nhc'
+      },
+      getters:{
+        userName(state){
+          return state.name+',hello'
+        }
+      },
+      mutations:{
+        increment(state,num){
+          state.count=num
+        },
+        updateName(state,name){
+          state.name=name
+        }
+      },
+      actions:{
+        incrementAction(context,num){
+          context.commit('increment',num);
+        },
+        updateNameAction(context,name){
+          context.commit('updateName',name);
+        }
+      }
+    });
+    new Vue({
+      el:'#app',
+      store:store1,
+      data:{
+        msg:'vuex的使用'
+      },
+      components:{
+        counter
+      },
+      methods:{
+        add(){
+          this.$store.dispatch('incrementAction',1000);
+          this.$store.dispatch('updateNameAction','like1');
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
